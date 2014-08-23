@@ -10,6 +10,11 @@ public class Island {
 		this.cells = cells;
 	}
 
+	public bool IsNavigable(int row, int column, int size) {
+		return row < 0 || row >= size || column < 0 || column >= size
+			|| cells[row * size + column] == CellType.Water;
+	}
+
 	public static CellType[] Generate(string seed, int islandSize, int seedBase, float noiseSize, float falloffExponent, float threshold) {
 		var cells = new CellType[islandSize * islandSize];
 		var seedHash = seedBase + seed.GetHashCode();

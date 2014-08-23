@@ -38,6 +38,8 @@ public class Islands : MonoBehaviour {
 	[System.NonSerialized]
 	private bool lockRotator;
 
+	private Island frontIsland;
+
 	public Islands() {
 		frontSeed = "";
 		islands = new Dictionary<string, Island>();
@@ -53,7 +55,8 @@ public class Islands : MonoBehaviour {
 	public void FinishNavigation() {
 		lockRotator = false;
 
-		ShowIslandOnGrid(GetIsland(frontSeed), frontLayout);
+		frontIsland = GetIsland(frontSeed);
+		ShowIslandOnGrid(frontIsland, frontLayout);
 		ShowIslandOnGrid(GetIsland(GetNeighborSeed(frontSeed, "l", "r")), leftLayout);
 		ShowIslandOnGrid(GetIsland(GetNeighborSeed(frontSeed, "r", "l")), rightLayout);
 		ShowIslandOnGrid(GetIsland(GetNeighborSeed(frontSeed, "t", "b")), topLayout);
@@ -66,21 +69,26 @@ public class Islands : MonoBehaviour {
 
 	void Update () {
 		if (!lockRotator) {
+			// TODO: cell accessor and bounds checking
 			if (Input.GetKeyDown("left")) {
-				shipColumn -= 1;
 				shipDirection = Direction.Left;
+				if (frontIsland.IsNavigable(shipRow, shipColumn - 1, islandsSize))
+					shipColumn -= 1;
 			}
 			if (Input.GetKeyDown("right")) {
-				shipColumn += 1;
 				shipDirection = Direction.Right;
+				if (frontIsland.IsNavigable(shipRow, shipColumn + 1, islandsSize))
+					shipColumn += 1;
 			}
 			if (Input.GetKeyDown("up")) {
-				shipRow += 1;
 				shipDirection = Direction.Top;
+				if (frontIsland.IsNavigable(shipRow + 1, shipColumn, islandsSize))
+					shipRow += 1;
 			}
 			if (Input.GetKeyDown("down")) {
-				shipRow -= 1;
 				shipDirection = Direction.Bottom;
+				if (frontIsland.IsNavigable(shipRow - 1, shipColumn, islandsSize))
+					shipRow -= 1;
 			}
 		}
 
