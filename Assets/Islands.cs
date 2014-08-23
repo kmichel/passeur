@@ -5,6 +5,12 @@ public class Islands : MonoBehaviour {
 
 	public int islandsSize;
 
+	public int initialHumanCount;
+	public int minInitialSheepCount;
+	public int maxInitialSheepCount;
+	[Range(0, 1)]
+	public float movementProbability;
+
 	public int seedBase;
 	public float noiseSize;
 	[Range(0, 10)]
@@ -21,10 +27,14 @@ public class Islands : MonoBehaviour {
 	public WorldRotator worldRotator;
 	public GameObject waterPrototype;
 	public GameObject groundPrototype;
+	public GameObject sheepPrototype;
+	public GameObject humanPrototype;
 	public GameObject ship;
 
 	public GameObject waterPool;
 	public GameObject groundPool;
+	public GameObject sheepPool;
+	public GameObject humanPool;
 	public GameObject shipPool;
 
 	public string frontSeed;
@@ -49,6 +59,8 @@ public class Islands : MonoBehaviour {
 	}
 
 	void Start() {
+		frontIsland = GetIsland(frontSeed);
+		frontIsland.CreateAnimals(AnimalType.Human, initialHumanCount);
 		FinishNavigation();
 	}
 
@@ -72,22 +84,22 @@ public class Islands : MonoBehaviour {
 			// TODO: cell accessor and bounds checking
 			if (Input.GetKeyDown("left")) {
 				shipDirection = Direction.Left;
-				if (frontIsland.IsNavigable(shipRow, shipColumn - 1, islandsSize))
+				if (frontIsland.IsNavigable(shipRow, shipColumn - 1))
 					shipColumn -= 1;
 			}
 			if (Input.GetKeyDown("right")) {
 				shipDirection = Direction.Right;
-				if (frontIsland.IsNavigable(shipRow, shipColumn + 1, islandsSize))
+				if (frontIsland.IsNavigable(shipRow, shipColumn + 1))
 					shipColumn += 1;
 			}
 			if (Input.GetKeyDown("up")) {
 				shipDirection = Direction.Top;
-				if (frontIsland.IsNavigable(shipRow + 1, shipColumn, islandsSize))
+				if (frontIsland.IsNavigable(shipRow + 1, shipColumn))
 					shipRow += 1;
 			}
 			if (Input.GetKeyDown("down")) {
 				shipDirection = Direction.Bottom;
-				if (frontIsland.IsNavigable(shipRow - 1, shipColumn, islandsSize))
+				if (frontIsland.IsNavigable(shipRow - 1, shipColumn))
 					shipRow -= 1;
 			}
 		}
@@ -122,6 +134,9 @@ public class Islands : MonoBehaviour {
 
 		if (!lockRotator)
 			UpdateRotationHint();
+
+		foreach (var island in islands.Values)
+			island.Update(movementProbability);
 	}
 
 	public void UpdateRotationHint() {
@@ -145,21 +160,34 @@ public class Islands : MonoBehaviour {
 	public void ShowIslandOnGrid(Island island, GridLayout gridLayout) {
 		gridLayout.size = islandsSize;
 		gridLayout.Clear();
+		// TODO: deduplicate pooling code
 		for (var row = 0; row < islandsSize; ++row) {
 			for (var column = 0; column < islandsSize; ++column) {
 				var cellType = island.cells[row * islandsSize + column];
 				var pool = cellType == CellType.Water ? waterPool : groundPool;
+				GameObject instance;
 				if (pool.transform.childCount > 0) {
-					var instance = pool.transform.GetChild(0).gameObject;
-					gridLayout.AddItem(row, column, 0, instance, pool);
+					instance = pool.transform.GetChild(0).gameObject;
 				} else {
 					var prototype = cellType == CellType.Water ? waterPrototype : groundPrototype;
-					var instance = Object.Instantiate(prototype) as GameObject;
-					instance.SetActive(true);
-					instance.transform.localRotation = Quaternion.identity;
-					gridLayout.AddItem(row, column, 0, instance, pool);
+					instance = Object.Instantiate(prototype) as GameObject;
 				}
+				gridLayout.AddItem(row, column, 0, instance, pool);
 			}
+		}
+		foreach (var animal in island.animals) {
+			var pool = animal.type == AnimalType.Sheep ? sheepPool : humanPool;
+			GameObject instance;
+			if (pool.transform.childCount > 0) {
+				instance = pool.transform.GetChild(0).gameObject;
+			} else {
+				var prototype = animal.type == AnimalType.Sheep ? sheepPrototype : humanPrototype;
+				instance = Object.Instantiate(prototype) as GameObject;
+			}
+			var animalView = instance.GetComponent<AnimalView>();
+			animalView.gridLayout = gridLayout;
+			animalView.animal = animal;
+			gridLayout.AddItem(animal.row, animal.column, 0, instance, pool);
 		}
 	}
 
@@ -167,6 +195,7 @@ public class Islands : MonoBehaviour {
 		Island island;
 		if (!islands.TryGetValue(seed, out island)) {
 			island = CreateIsland(seed);
+			island.CreateAnimals(AnimalType.Sheep, Random.Range(minInitialSheepCount, maxInitialSheepCount));
 			islands[seed] = island;
 		}
 		return island;
@@ -174,8 +203,9 @@ public class Islands : MonoBehaviour {
 
 	public Island CreateIsland(string seed) {
 		return new Island(
+			islandsSize,
 			seed,
-			Island.Generate(seed, islandsSize, seedBase, noiseSize, falloffExponent, threshold));
+			Island.GenerateGround(seed, islandsSize, seedBase, noiseSize, falloffExponent, threshold));
 	}
 
 	public void UpdateSeed(string suffix, string oppositeSuffix) {
