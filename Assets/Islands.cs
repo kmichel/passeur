@@ -195,7 +195,7 @@ public class Islands : MonoBehaviour {
 		Island island;
 		if (!islands.TryGetValue(seed, out island)) {
 			island = CreateIsland(seed);
-			island.CreateAnimals(AnimalType.Sheep, Random.Range(minInitialSheepCount, maxInitialSheepCount));
+			island.CreateAnimals(AnimalType.Sheep, island.RandInt(minInitialSheepCount, maxInitialSheepCount));
 			islands[seed] = island;
 		}
 		return island;

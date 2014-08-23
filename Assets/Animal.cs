@@ -15,40 +15,26 @@ public class Animal {
 	}
 
 	public void Update(Island island, float movementProbability) {
-		if (Random.Range(0f, 1f) < movementProbability) {
-			var direction = GetRandomDirection();
+		if (island.RandFloat(0f, 1f) < movementProbability) {
+			var direction = island.RandInt(0, 4);
 			switch (direction) {
-			case Direction.Left:
+			case 0:
 				if (island.IsWalkableAndAvailable(row, column - 1))
 					column -= 1;
 				break;
-			case Direction.Right:
+			case 1:
 				if (island.IsWalkableAndAvailable(row, column + 1))
 					column += 1;
 				break;
-			case Direction.Top:
+			case 2:
 				if (island.IsWalkableAndAvailable(row + 1, column))
 					row += 1;
 				break;
-			case Direction.Bottom:
+			case 3:
 				if (island.IsWalkableAndAvailable(row - 1, column))
 					row -= 1;
 				break;
 			}
-		}
-	}
-
-	public static Direction GetRandomDirection() {
-		switch (Random.Range(0, 4)) {
-		default:
-		case 0:
-			return Direction.Left;
-		case 1:
-			return Direction.Right;
-		case 2:
-			return Direction.Top;
-		case 3:
-			return Direction.Bottom;
 		}
 	}
 }

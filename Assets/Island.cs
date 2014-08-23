@@ -8,11 +8,28 @@ public class Island {
 	public CellType[] cells;
 	public List<Animal> animals;
 
+	private int randomSeed;
+
 	public Island(int size, string seed, CellType[] cells) {
 		this.size = size;
 		this.seed = seed;
 		this.cells = cells;
 		this.animals = new List<Animal>();
+		this.randomSeed = seed.GetHashCode();
+	}
+
+	public int RandInt(int min, int max) {
+		Random.seed = randomSeed;
+		var value = Random.Range(min, max);
+		randomSeed = Random.Range(int.MinValue, int.MaxValue);
+		return value;
+	}
+
+	public float RandFloat(float min, float max) {
+		Random.seed = randomSeed;
+		var value = Random.Range(min, max);
+		randomSeed = Random.Range(int.MinValue, int.MaxValue);
+		return value;
 	}
 
 	public void CreateAnimals(AnimalType type, int count) {
@@ -22,8 +39,8 @@ public class Island {
 	}
 
 	public bool TryCreateAnimal(AnimalType type) {
-		var row = Random.Range(0, size);
-		var column = Random.Range(0, size);
+		var row = RandInt(0, size);
+		var column = RandInt(0, size);
 		if (IsWalkableAndAvailable(row, column)) {
 			this.animals.Add(new Animal(type, row, column));
 			return true;
