@@ -3,9 +3,28 @@ using System.Collections.Generic;
 
 public class Island {
 
+	public class Area {
+		public int startRow;
+		public int startColumn;
+		public int number;
+		public int size;
+
+		public Area(int startRow, int startColumn, int number, int size) {
+			this.startRow = startRow;
+			this.startColumn = startColumn;
+			this.number = number;
+			this.size = size;
+		}
+	}
+
 	public int size;
 	public string seed;
 	public CellType[] cells;
+
+	public int[] areaNumbers;
+	public List<Area> waterAreas;
+	public List<Area> groundAreas;
+
 	public List<Animal> animals;
 	public List<Harbor> harbors;
 
@@ -15,9 +34,21 @@ public class Island {
 		this.size = size;
 		this.seed = seed;
 		this.cells = cells;
+		areaNumbers = new int[cells.Length];
+		waterAreas = new List<Area>();
+		groundAreas = new List<Area>();
+		ComputeAreas();
 		this.animals = new List<Animal>();
 		this.harbors = new List<Harbor>();
 		this.randomSeed = seed.GetHashCode();
+	}
+
+	public Area GetLargestGroundArea() {
+		Area largestArea = null;
+		foreach (var area in groundAreas)
+			if (largestArea == null || area.size > largestArea.size)
+				largestArea = area;
+		return largestArea;
 	}
 
 	public int RandInt(int min, int max) {
@@ -115,6 +146,57 @@ public class Island {
 			}
 		}
 		return cells;
+	}
+
+	public void ComputeAreas() {
+		int row;
+		int column;
+		int areaNumber = 1;
+		while (FindFirstNonNumberedCell(CellType.Ground, out row, out column)) {
+			int areaSize = 0;
+			FillArea(CellType.Ground, row, column, areaNumber, ref areaSize);
+			groundAreas.Add(new Area(row, column, areaNumber, areaSize));
+			++areaNumber;
+		}
+		areaNumber = -1;
+		while (FindFirstNonNumberedCell(CellType.Water, out row, out column)) {
+			int areaSize = 0;
+			FillArea(CellType.Water, row, column, areaNumber, ref areaSize);
+			waterAreas.Add(new Area(row, column, areaNumber, areaSize));
+			--areaNumber;
+		}
+	}
+
+	public bool FindFirstNonNumberedCell(CellType type, out int outRow, out int outColumn) {
+		for (var row = 0; row < size; ++row) {
+			for (var column = 0; column < size; ++column) {
+				var index = row * size + column;
+				if (cells[index] == type && areaNumbers[index] == 0) {
+					outRow = row;
+					outColumn = column;
+					return true;
+				}
+			}
+		}
+		outRow = -1;
+		outColumn = -1;
+		return false;
+	}
+
+	public void FillArea(CellType type, int row, int column, int areaNumber, ref int areaSize) {
+		var index = row * size + column;
+		if (cells[index] == type && areaNumbers[index] == 0) {
+			areaNumbers[index] = areaNumber;
+			++areaSize;
+			if (row > 0)
+				FillArea(type, row - 1, column, areaNumber, ref areaSize);
+			if (row < size - 1)
+				FillArea(type, row + 1, column, areaNumber, ref areaSize);
+			if (column > 0)
+				FillArea(type, row, column - 1, areaNumber, ref areaSize);
+			if (column < size - 1)
+				FillArea(type, row, column + 1, areaNumber, ref areaSize);
+		}
 	}
 
 }

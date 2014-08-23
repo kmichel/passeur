@@ -58,13 +58,7 @@ public class Islands : MonoBehaviour {
 	}
 
 	void Start() {
-		frontIsland = GetIsland(frontSeed);
-		// TODO: make this dynamic
-		frontIsland.CreateHarbor(6, 17);
-		frontIsland.CreateAnimals(AnimalType.Human, initialHumanCount);
-		shipRow = 6;
-		shipColumn = 18;
-		shipDirection = Direction.Bottom;
+		frontIsland = GetIsland(frontSeed, isInitialIsland:true);
 		FinishNavigation();
 	}
 
@@ -167,7 +161,8 @@ public class Islands : MonoBehaviour {
 		// TODO: deduplicate pooling code
 		for (var row = 0; row < islandsSize; ++row) {
 			for (var column = 0; column < islandsSize; ++column) {
-				var cellType = island.cells[row * islandsSize + column];
+				var index = row * islandsSize + column;
+				var cellType = island.cells[index];
 				var pool = cellType == CellType.Water ? waterPool : groundPool;
 				GameObject instance;
 				if (pool.transform.childCount > 0) {
@@ -204,10 +199,20 @@ public class Islands : MonoBehaviour {
 		}
 	}
 
-	public Island GetIsland(string seed) {
+	public Island GetIsland(string seed, bool isInitialIsland=false) {
 		Island island;
 		if (!islands.TryGetValue(seed, out island)) {
 			island = CreateIsland(seed);
+			if (isInitialIsland) {
+				var largestArea = island.GetLargestGroundArea();
+				island.CreateHarbor(largestArea.startRow, largestArea.startColumn);
+				// The fact that this cell is always water relies on the scan order of
+				// the algorithm used for area detection and on the all-water border
+				shipRow = largestArea.startRow;
+				shipColumn = largestArea.startColumn - 1;
+				shipDirection = Direction.Bottom;
+				island.CreateAnimals(AnimalType.Human, initialHumanCount);
+			}
 			island.CreateAnimals(AnimalType.Sheep, island.RandInt(minInitialSheepCount, maxInitialSheepCount));
 			islands[seed] = island;
 		}
