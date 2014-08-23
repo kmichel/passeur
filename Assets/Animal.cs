@@ -19,19 +19,19 @@ public class Animal {
 			var direction = GetRandomDirection();
 			switch (direction) {
 			case Direction.Left:
-				if (island.IsWalkable(row, column - 1))
+				if (island.IsWalkableAndAvailable(row, column - 1))
 					column -= 1;
 				break;
 			case Direction.Right:
-				if (island.IsWalkable(row, column + 1))
+				if (island.IsWalkableAndAvailable(row, column + 1))
 					column += 1;
 				break;
 			case Direction.Top:
-				if (island.IsWalkable(row + 1, column))
+				if (island.IsWalkableAndAvailable(row + 1, column))
 					row += 1;
 				break;
 			case Direction.Bottom:
-				if (island.IsWalkable(row - 1, column))
+				if (island.IsWalkableAndAvailable(row - 1, column))
 					row -= 1;
 				break;
 			}

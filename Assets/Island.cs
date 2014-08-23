@@ -24,7 +24,7 @@ public class Island {
 	public bool TryCreateAnimal(AnimalType type) {
 		var row = Random.Range(0, size);
 		var column = Random.Range(0, size);
-		if (IsWalkable(row, column)) {
+		if (IsWalkableAndAvailable(row, column)) {
 			this.animals.Add(new Animal(type, row, column));
 			return true;
 		}
@@ -44,6 +44,19 @@ public class Island {
 	public bool IsWalkable(int row, int column) {
 		return row >= 0 && row < size && column >= 0 && column < size
 			&& cells[row * size + column] == CellType.Ground;
+	}
+
+	public bool IsAvailable(int row, int column) {
+		for (int index = 0; index < animals.Count; ++index) {
+			var animal = animals[index];
+			if (animal.row == row && animal.column == column)
+				return false;
+		}
+		return true;
+	}
+
+	public bool IsWalkableAndAvailable(int row, int column) {
+		return IsWalkable(row, column) && IsAvailable(row, column);
 	}
 
 	public static CellType[] GenerateGround(string seed, int islandSize, int seedBase, float noiseSize, float falloffExponent, float threshold) {
