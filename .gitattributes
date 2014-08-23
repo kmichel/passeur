@@ -1,0 +1,7 @@
+*.cs eol=lf
+*.shader eol=lf
+*.meta eol=lf
+*.asset eol=lf
+*.unity eol=lf
+.gitattributes text
+.gitignore text

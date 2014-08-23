@@ -1,0 +1,34 @@
+# Unity
+
+Library/
+Temp/
+Assets/Editor/
+Assets/Editor.meta
+
+# Mono
+
+*.svd
+*.userprefs
+/*.csproj
+*.pidb
+*.suo
+/*.sln
+*.user
+*.unityproj
+*.booproj
+
+# Python
+
+*.pyc
+*.pyc.meta
+
+# OS
+
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashed
+.ehthumbs.db
+Thumbs.db
+Thumbs.db.meta
