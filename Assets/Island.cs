@@ -7,6 +7,7 @@ public class Island {
 	public string seed;
 	public CellType[] cells;
 	public List<Animal> animals;
+	public List<Harbor> harbors;
 
 	private int randomSeed;
 
@@ -15,6 +16,7 @@ public class Island {
 		this.seed = seed;
 		this.cells = cells;
 		this.animals = new List<Animal>();
+		this.harbors = new List<Harbor>();
 		this.randomSeed = seed.GetHashCode();
 	}
 
@@ -48,6 +50,10 @@ public class Island {
 		return false;
 	}
 
+	public void CreateHarbor(int row, int column) {
+		this.harbors.Add(new Harbor(row, column));
+	}
+
 	public void Update(float movementProbability) {
 		for (int index = 0; index < animals.Count; ++index)
 			animals[index].Update(this, movementProbability);
@@ -64,9 +70,14 @@ public class Island {
 	}
 
 	public bool IsAvailable(int row, int column) {
-		for (int index = 0; index < animals.Count; ++index) {
+		for (var index = 0; index < animals.Count; ++index) {
 			var animal = animals[index];
 			if (animal.row == row && animal.column == column)
+				return false;
+		}
+		for (var index = 0; index < harbors.Count; ++index) {
+			var harbor = harbors[index];
+			if (harbor.row == row && harbor.column == column)
 				return false;
 		}
 		return true;

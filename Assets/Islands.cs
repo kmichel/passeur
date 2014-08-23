@@ -29,12 +29,14 @@ public class Islands : MonoBehaviour {
 	public GameObject groundPrototype;
 	public GameObject sheepPrototype;
 	public GameObject humanPrototype;
+	public GameObject harborPrototype;
 	public GameObject ship;
 
 	public GameObject waterPool;
 	public GameObject groundPool;
 	public GameObject sheepPool;
 	public GameObject humanPool;
+	public GameObject harborPool;
 	public GameObject shipPool;
 
 	public string frontSeed;
@@ -53,14 +55,16 @@ public class Islands : MonoBehaviour {
 	public Islands() {
 		frontSeed = "";
 		islands = new Dictionary<string, Island>();
-		shipRow = 3;
-		shipColumn = 3;
-		shipDirection = Direction.Left;
 	}
 
 	void Start() {
 		frontIsland = GetIsland(frontSeed);
+		// TODO: make this dynamic
+		frontIsland.CreateHarbor(6, 17);
 		frontIsland.CreateAnimals(AnimalType.Human, initialHumanCount);
+		shipRow = 6;
+		shipColumn = 18;
+		shipDirection = Direction.Bottom;
 		FinishNavigation();
 	}
 
@@ -188,6 +192,15 @@ public class Islands : MonoBehaviour {
 			animalView.gridLayout = gridLayout;
 			animalView.animal = animal;
 			gridLayout.AddItem(animal.row, animal.column, 0, instance, pool);
+		}
+		foreach (var harbor in island.harbors) {
+			GameObject instance;
+			if (harborPool.transform.childCount > 0) {
+				instance = harborPool.transform.GetChild(0).gameObject;
+			} else {
+				instance = Object.Instantiate(harborPrototype) as GameObject;
+			}
+			gridLayout.AddItem(harbor.row, harbor.column, 0, instance, harborPool);
 		}
 	}
 
