@@ -149,6 +149,7 @@ GameObject:
   - 64: {fileID: 1423202715}
   - 23: {fileID: 1423202714}
   - 114: {fileID: 1423202713}
+  - 114: {fileID: 1423202718}
   m_Layer: 0
   m_Name: Island
   m_TagString: Untagged
@@ -230,6 +231,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
+--- !u!114 &1423202718
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1423202712}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69cf0473780b242b5b0f940012f07b54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  generator: {fileID: 1423202713}
 --- !u!1 &1489304814
 GameObject:
   m_ObjectHideFlags: 0
