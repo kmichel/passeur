@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public enum CellType {
+﻿public enum CellType {
 	Water,
 	Ground
 }

@@ -9,7 +9,8 @@ public class GridLayout : MonoBehaviour {
 		public GameObject gameObject;
 		public GameObject pool;
 
-		public void SetScale(int gridSize) {
+		public void SetScaleAndRotation(int gridSize) {
+			gameObject.transform.localRotation = Quaternion.identity;
 			var spacing = 1.0f / gridSize;
 			gameObject.transform.localScale = new Vector3(spacing, spacing, spacing);
 		}
@@ -42,8 +43,9 @@ public class GridLayout : MonoBehaviour {
 		items.Add(gameObject, item);
 
 		gameObject.transform.parent = transform;
-		item.SetScale(size);
+		item.SetScaleAndRotation(size);
 		item.SetPosition(size);
+		gameObject.SetActive(true);
 	}
 
 	public void MoveItem(int row, int column, GameObject gameObject) {
@@ -54,8 +56,10 @@ public class GridLayout : MonoBehaviour {
 	}
 
 	public void Clear() {
-		foreach (var item in items.Values)
+		foreach (var item in items.Values) {
+			item.gameObject.SetActive(false);
 			item.gameObject.transform.parent = item.pool.transform;
+		}
 		items.Clear();
 	}
 }
