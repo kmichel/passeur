@@ -169,6 +169,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 1423202714}
   textureSize: 32
+  seed: 
+  seedBase: 11
   noiseCenter: {x: 10, y: 10}
   noiseSize: 3
   falloffExponent: 1.20000005
