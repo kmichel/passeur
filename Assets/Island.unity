@@ -450,6 +450,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   islandsSize: 24
+  initialHumanCount: 12
+  minInitialSheepCount: 3
+  maxInitialSheepCount: 8
   movementProbability: .00999999978
   seedBase: 11
   noiseSize: 3

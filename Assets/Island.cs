@@ -13,8 +13,6 @@ public class Island {
 		this.seed = seed;
 		this.cells = cells;
 		this.animals = new List<Animal>();
-		if (IsWalkable(size / 2, size / 2))
-			this.animals.Add(new Animal(AnimalType.Sheep, size / 2, size / 2));
 	}
 
 	public void CreateAnimals(AnimalType type, int count) {
