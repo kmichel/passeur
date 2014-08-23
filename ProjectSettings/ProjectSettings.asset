@@ -149,7 +149,9 @@ PlayerSettings:
   psp2PackagedResourcesPath: 
   flashStrippingLevel: 2
   spritePackerPolicy: 
-  scriptingDefineSymbols: {}
+  scriptingDefineSymbols:
+    1: Front;Light
+    2: Front;Light
   metroPackageName: Passeur
   metroPackageLogo: 
   metroPackageLogo140: 
