@@ -6,11 +6,15 @@ public class GridLayout : MonoBehaviour {
 	private class GridItem {
 		public int row;
 		public int column;
+		public float rotation;
 		public GameObject gameObject;
 		public GameObject pool;
 
-		public void SetScaleAndRotation(int gridSize) {
-			gameObject.transform.localRotation = Quaternion.identity;
+		public void SetRotation() {
+			gameObject.transform.localRotation = Quaternion.AngleAxis(rotation, Vector3.forward);
+		}
+
+		public void SetScale(int gridSize) {
 			var spacing = 1.0f / gridSize;
 			gameObject.transform.localScale = new Vector3(spacing, spacing, spacing);
 		}
@@ -34,24 +38,28 @@ public class GridLayout : MonoBehaviour {
 		items = new Dictionary<GameObject, GridItem>();
 	}
 
-	public void AddItem(int row, int column, GameObject gameObject, GameObject pool) {
+	public void AddItem(int row, int column, float rotation, GameObject gameObject, GameObject pool) {
 		var item = new GridItem();
 		item.row = row;
 		item.column = column;
+		item.rotation = rotation;
 		item.gameObject = gameObject;
 		item.pool = pool;
 		items.Add(gameObject, item);
 
 		gameObject.transform.parent = transform;
-		item.SetScaleAndRotation(size);
+		item.SetRotation();
+		item.SetScale(size);
 		item.SetPosition(size);
 		gameObject.SetActive(true);
 	}
 
-	public void MoveItem(int row, int column, GameObject gameObject) {
+	public void MoveItem(int row, int column, float rotation, GameObject gameObject) {
 		var item = items[gameObject];
 		item.row = row;
 		item.column = column;
+		item.rotation = rotation;
+		item.SetRotation();
 		item.SetPosition(size);
 	}
 

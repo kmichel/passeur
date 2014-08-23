@@ -62,7 +62,7 @@ public class Islands : MonoBehaviour {
 		ShowIslandOnGrid(GetIsland(GetNeighborSeed(frontSeed, "t", "b")), topLayout);
 		ShowIslandOnGrid(GetIsland(GetNeighborSeed(frontSeed, "b", "t")), bottomLayout);
 
-		frontLayout.AddItem(shipRow, shipColumn, ship, shipPool);
+		frontLayout.AddItem(shipRow, shipColumn, DirectionToAngle(shipDirection), ship, shipPool);
 		UpdateRotationHint();
 		worldRotator.JumpToTarget();
 	}
@@ -96,28 +96,28 @@ public class Islands : MonoBehaviour {
 			shipColumn = islandsSize - 1;
 			UpdateSeed("l", "r");
 			lockRotator = true;
-			leftLayout.AddItem(shipRow, shipColumn, ship, shipPool);
+			leftLayout.AddItem(shipRow, shipColumn, DirectionToAngle(shipDirection), ship, shipPool);
 			worldRotator.Navigate(Direction.Left, FinishNavigation);
 		} else if (shipColumn == islandsSize) {
 			shipColumn = 0;
 			UpdateSeed("r", "l");
 			lockRotator = true;
-			rightLayout.AddItem(shipRow, shipColumn, ship, shipPool);
+			rightLayout.AddItem(shipRow, shipColumn, DirectionToAngle(shipDirection), ship, shipPool);
 			worldRotator.Navigate(Direction.Right, FinishNavigation);
 		} else if (shipRow == -1) {
 			shipRow = islandsSize - 1;
 			UpdateSeed("b", "t");
 			lockRotator = true;
-			bottomLayout.AddItem(shipRow, shipColumn, ship, shipPool);
+			bottomLayout.AddItem(shipRow, shipColumn, DirectionToAngle(shipDirection), ship, shipPool);
 			worldRotator.Navigate(Direction.Bottom, FinishNavigation);
 		} else if (shipRow == islandsSize) {
 			shipRow = 0;
 			UpdateSeed("t", "b");
 			lockRotator = true;
-			topLayout.AddItem(shipRow, shipColumn, ship, shipPool);
+			topLayout.AddItem(shipRow, shipColumn, DirectionToAngle(shipDirection), ship, shipPool);
 			worldRotator.Navigate(Direction.Top, FinishNavigation);
 		} else {
-			frontLayout.MoveItem(shipRow, shipColumn, ship);
+			frontLayout.MoveItem(shipRow, shipColumn, DirectionToAngle(shipDirection), ship);
 		}
 
 		if (!lockRotator)
@@ -151,13 +151,13 @@ public class Islands : MonoBehaviour {
 				var pool = cellType == CellType.Water ? waterPool : groundPool;
 				if (pool.transform.childCount > 0) {
 					var instance = pool.transform.GetChild(0).gameObject;
-					gridLayout.AddItem(row, column, instance, pool);
+					gridLayout.AddItem(row, column, 0, instance, pool);
 				} else {
 					var prototype = cellType == CellType.Water ? waterPrototype : groundPrototype;
 					var instance = Object.Instantiate(prototype) as GameObject;
 					instance.SetActive(true);
 					instance.transform.localRotation = Quaternion.identity;
-					gridLayout.AddItem(row, column, instance, pool);
+					gridLayout.AddItem(row, column, 0, instance, pool);
 				}
 			}
 		}
@@ -187,6 +187,20 @@ public class Islands : MonoBehaviour {
 			return seed.Substring(0, frontSeed.Length - oppositeSuffix.Length);
 		else
 			return seed + suffix;
+	}
+
+	public float DirectionToAngle(Direction direction) {
+		switch (direction) {
+		default:
+		case Direction.Left:
+			return 0f;
+		case Direction.Right:
+			return 180f;
+		case Direction.Top:
+			return 270f;
+		case Direction.Bottom:
+			return 90f;
+		}
 	}
 	
 }

@@ -83,7 +83,6 @@ GameObject:
   m_Component:
   - 4: {fileID: 571305754}
   - 33: {fileID: 571305757}
-  - 65: {fileID: 571305756}
   - 23: {fileID: 571305755}
   m_Layer: 0
   m_Name: Ship
@@ -124,25 +123,13 @@ Renderer:
   m_ScaleInLightmap: 1
   m_SortingLayerID: 0
   m_SortingOrder: 0
---- !u!65 &571305756
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 571305753}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!33 &571305757
 MeshFilter:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 571305753}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 4300000, guid: 43eccd5f5ea2844faaa938d2c5d646de, type: 3}
 --- !u!1 &1047242317
 GameObject:
   m_ObjectHideFlags: 0
@@ -633,6 +620,7 @@ GameObject:
   - 4: {fileID: 1701483233}
   - 33: {fileID: 1701483232}
   - 23: {fileID: 1701483230}
+  - 64: {fileID: 1701483231}
   m_Layer: 0
   m_Name: Ground Prototype
   m_TagString: Untagged
@@ -660,13 +648,26 @@ Renderer:
   m_ScaleInLightmap: 1
   m_SortingLayerID: 0
   m_SortingOrder: 0
+--- !u!64 &1701483231
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1701483229}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_SmoothSphereCollisions: 0
+  m_Convex: 0
+  m_Mesh: {fileID: 4300002, guid: 240d2b1978cd3492da9442fcd33cc151, type: 3}
 --- !u!33 &1701483232
 MeshFilter:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1701483229}
-  m_Mesh: {fileID: 4300000, guid: 240d2b1978cd3492da9442fcd33cc151, type: 3}
+  m_Mesh: {fileID: 4300002, guid: 43eccd5f5ea2844faaa938d2c5d646de, type: 3}
 --- !u!4 &1701483233
 Transform:
   m_ObjectHideFlags: 0
