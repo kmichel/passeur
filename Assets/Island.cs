@@ -22,15 +22,19 @@ public class Island {
 		var radius = islandSize * Mathf.Sqrt(0.5f);
 		for (var row = 0; row < islandSize; ++row) {
 			for (var column = 0; column < islandSize; ++column) {
-				var x = seedX + offset + row * spacing;
-				var y = seedY + offset + column * spacing;
-				var distanceToCenter =
-					Vector2.Distance(
-						new Vector2(row, column),
-						new Vector2(center, center))
-						/ radius;
-				var sample = Mathf.PerlinNoise(x, y) * (1.0f - Mathf.Pow(distanceToCenter, falloffExponent));
-				cells[row * islandSize + column] = sample > threshold ? CellType.Ground : CellType.Water;
+				if (row == 0 || column == 0 || row == islandSize - 1 || column == islandSize - 1) {
+					cells[row * islandSize + column] = CellType.Water;
+				} else {
+					var x = seedX + offset + row * spacing;
+					var y = seedY + offset + column * spacing;
+					var distanceToCenter =
+						Vector2.Distance(
+							new Vector2(row, column),
+							new Vector2(center, center))
+							/ radius;
+					var sample = Mathf.PerlinNoise(x, y) * (1.0f - Mathf.Pow(distanceToCenter, falloffExponent));
+					cells[row * islandSize + column] = sample > threshold ? CellType.Ground : CellType.Water;
+				}
 			}
 		}
 		return cells;
