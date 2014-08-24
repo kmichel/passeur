@@ -25,14 +25,12 @@ public class Islands : MonoBehaviour {
 	public GridLayout bottomLayout;
 
 	public WorldRotator worldRotator;
-	public GameObject waterPrototype;
 	public GameObject groundPrototype;
 	public GameObject sheepPrototype;
 	public GameObject humanPrototype;
 	public GameObject harborPrototype;
 	public GameObject ship;
 
-	public GameObject waterPool;
 	public GameObject groundPool;
 	public GameObject sheepPool;
 	public GameObject humanPool;
@@ -163,15 +161,15 @@ public class Islands : MonoBehaviour {
 			for (var column = 0; column < islandsSize; ++column) {
 				var index = row * islandsSize + column;
 				var cellType = island.cells[index];
-				var pool = cellType == CellType.Water ? waterPool : groundPool;
-				GameObject instance;
-				if (pool.transform.childCount > 0) {
-					instance = pool.transform.GetChild(0).gameObject;
-				} else {
-					var prototype = cellType == CellType.Water ? waterPrototype : groundPrototype;
-					instance = Object.Instantiate(prototype) as GameObject;
+				if (cellType == CellType.Ground) {
+					GameObject instance;
+					if (groundPool.transform.childCount > 0) {
+						instance = groundPool.transform.GetChild(0).gameObject;
+					} else {
+						instance = Object.Instantiate(groundPrototype) as GameObject;
+					}
+					gridLayout.AddItem(row, column, 0, instance, groundPool);
 				}
-				gridLayout.AddItem(row, column, 0, instance, pool);
 			}
 		}
 		foreach (var animal in island.animals) {
