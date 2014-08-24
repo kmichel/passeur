@@ -18,6 +18,12 @@ public class Islands : MonoBehaviour {
 	[Range(0, 1)]
 	public float threshold;
 
+	public MeshFilter frontGround;
+	public MeshFilter leftGround;
+	public MeshFilter rightGround;
+	public MeshFilter topGround;
+	public MeshFilter bottomGround;
+
 	public GridLayout frontLayout;
 	public GridLayout leftLayout;
 	public GridLayout rightLayout;
@@ -25,13 +31,11 @@ public class Islands : MonoBehaviour {
 	public GridLayout bottomLayout;
 
 	public WorldRotator worldRotator;
-	public GameObject groundPrototype;
 	public GameObject sheepPrototype;
 	public GameObject humanPrototype;
 	public GameObject harborPrototype;
 	public GameObject ship;
 
-	public GameObject groundPool;
 	public GameObject sheepPool;
 	public GameObject humanPool;
 	public GameObject harborPool;
@@ -64,11 +68,11 @@ public class Islands : MonoBehaviour {
 		lockRotator = false;
 
 		frontIsland = GetIsland(frontSeed);
-		ShowIslandOnGrid(frontIsland, frontLayout);
-		ShowIslandOnGrid(GetIsland(GetNeighborSeed(frontSeed, "l", "r")), leftLayout);
-		ShowIslandOnGrid(GetIsland(GetNeighborSeed(frontSeed, "r", "l")), rightLayout);
-		ShowIslandOnGrid(GetIsland(GetNeighborSeed(frontSeed, "t", "b")), topLayout);
-		ShowIslandOnGrid(GetIsland(GetNeighborSeed(frontSeed, "b", "t")), bottomLayout);
+		ShowIslandOnGrid(frontIsland, frontLayout, frontGround);
+		ShowIslandOnGrid(GetIsland(GetNeighborSeed(frontSeed, "l", "r")), leftLayout, leftGround);
+		ShowIslandOnGrid(GetIsland(GetNeighborSeed(frontSeed, "r", "l")), rightLayout, rightGround);
+		ShowIslandOnGrid(GetIsland(GetNeighborSeed(frontSeed, "t", "b")), topLayout, topGround);
+		ShowIslandOnGrid(GetIsland(GetNeighborSeed(frontSeed, "b", "t")), bottomLayout, bottomGround);
 
 		frontLayout.AddItem(shipRow, shipColumn, DirectionToAngle(shipDirection), ship, shipPool);
 		UpdateRotationHint();
@@ -153,25 +157,11 @@ public class Islands : MonoBehaviour {
 		}
 	}
 
-	public void ShowIslandOnGrid(Island island, GridLayout gridLayout) {
+	public void ShowIslandOnGrid(Island island, GridLayout gridLayout, MeshFilter meshFilter) {
 		gridLayout.size = islandsSize;
 		gridLayout.Clear();
-		// TODO: deduplicate pooling code
-		for (var row = 0; row < islandsSize; ++row) {
-			for (var column = 0; column < islandsSize; ++column) {
-				var index = row * islandsSize + column;
-				var cellType = island.cells[index];
-				if (cellType == CellType.Ground) {
-					GameObject instance;
-					if (groundPool.transform.childCount > 0) {
-						instance = groundPool.transform.GetChild(0).gameObject;
-					} else {
-						instance = Object.Instantiate(groundPrototype) as GameObject;
-					}
-					gridLayout.AddItem(row, column, 0, instance, groundPool);
-				}
-			}
-		}
+		meshFilter.transform.localScale = Vector3.one;
+		meshFilter.mesh = IslandBuilder.Build(island);
 		foreach (var animal in island.animals) {
 			var pool = animal.type == AnimalType.Sheep ? sheepPool : humanPool;
 			GameObject instance;
