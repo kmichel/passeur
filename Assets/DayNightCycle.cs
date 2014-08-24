@@ -34,7 +34,7 @@ public class DayNightCycle : MonoBehaviour {
 			Mathf.Sin(2*Mathf.PI * dayPosition) * sunGlowEllipsis.x,
 			Mathf.Cos(2*Mathf.PI * dayPosition) * sunGlowEllipsis.y,
 			2);
-		shadows.transform.localRotation = Quaternion.AngleAxis(dayPosition * 260, Vector3.back);
+		shadows.transform.localRotation = Quaternion.AngleAxis(dayPosition * 360, Vector3.back);
 		shadowsLight.shadowStrength = 1 - gradientPosition;
 		stars.renderer.material.color = new Color(1, 1, 1, Mathf.Pow(gradientPosition, 3));
 	}
