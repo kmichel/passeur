@@ -16,6 +16,9 @@ public class DayNightCycle : MonoBehaviour {
 	public Gradient sunGlowGradient;
 	public Vector2 sunGlowEllipsis;
 
+	public Transform shadows;
+	public Light shadowsLight;
+
 	public ParticleSystem stars;
 
 	void Update () {
@@ -25,11 +28,14 @@ public class DayNightCycle : MonoBehaviour {
 		var gradientPosition = dayPosition > 0.5f ? 2 - dayPosition * 2 : dayPosition * 2;
 		targetCamera.backgroundColor = cameraGradient.Evaluate(gradientPosition);
 		targetLight.color = lightGradient.Evaluate(gradientPosition);
+		shadowsLight.color = lightGradient.Evaluate(gradientPosition);
 		sunGlow.renderer.material.SetColor("_TintColor", sunGlowGradient.Evaluate(gradientPosition));
 		sunGlow.transform.localPosition = new Vector3(
 			Mathf.Sin(2*Mathf.PI * dayPosition) * sunGlowEllipsis.x,
 			Mathf.Cos(2*Mathf.PI * dayPosition) * sunGlowEllipsis.y,
 			2);
+		shadows.transform.localRotation = Quaternion.AngleAxis(dayPosition * 260, Vector3.back);
+		shadowsLight.shadowStrength = 1 - gradientPosition;
 		stars.renderer.material.color = new Color(1, 1, 1, Mathf.Pow(gradientPosition, 3));
 	}
 }
