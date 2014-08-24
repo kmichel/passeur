@@ -27,6 +27,7 @@ public class Island {
 
 	public List<Animal> animals;
 	public List<Harbor> harbors;
+	public List<Grass> grasses;
 
 	private int randomSeed;
 
@@ -40,7 +41,8 @@ public class Island {
 		ComputeAreas();
 		this.animals = new List<Animal>();
 		this.harbors = new List<Harbor>();
-		this.randomSeed = seed.GetHashCode();
+		this.grasses = new List<Grass>();
+		randomSeed = seed.GetHashCode();
 	}
 
 	public Area GetLargestGroundArea() {
@@ -75,19 +77,45 @@ public class Island {
 		var row = RandInt(0, size);
 		var column = RandInt(0, size);
 		if (IsWalkableAndAvailable(row, column)) {
-			this.animals.Add(new Animal(type, row, column));
+			animals.Add(new Animal(type, row, column));
 			return true;
 		}
 		return false;
 	}
 
-	public void CreateHarbor(int row, int column) {
-		this.harbors.Add(new Harbor(row, column));
+	public void CreateGrassPatches(int count) {
+		for (var grassCount = 0; grassCount < count;)
+			if (TryCreateGrassPatch(RandInt(0, size), RandInt(0, size), 2))
+				++grassCount;
 	}
 
-	public void Update(float movementProbability) {
+	public bool TryCreateGrassPatch(int row, int column, int radius) {
+		if (IsWalkableAndPlantable(row, column)) {
+			grasses.Add(new Grass(row, column, RandFloat(0, 10)));
+			if (radius > 0) {
+				TryCreateGrassPatch(row - 1, column, radius - 1);
+				TryCreateGrassPatch(row + 1, column, radius - 1);
+				TryCreateGrassPatch(row, column - 1, radius - 1);
+				TryCreateGrassPatch(row, column + 1, radius - 1);
+			}
+			return true;
+		}
+		return false;
+	}
+
+	public void CreateGrass(int row, int column) {
+		grasses.Add(new Grass(row, column, 0));
+	}
+
+	public void CreateHarbor(int row, int column) {
+		harbors.Add(new Harbor(row, column));
+	}
+
+	public void Update(float movementProbability, float eatGrassProbability, float grassGrowProbability) {
 		for (int index = 0; index < animals.Count; ++index)
-			animals[index].Update(this, movementProbability);
+			animals[index].Update(this, movementProbability, eatGrassProbability);
+		for (int index = 0; index < grasses.Count; ++index)
+			grasses[index].Update(this, grassGrowProbability);
 	}
 
 	public bool IsNavigable(int row, int column) {
@@ -114,8 +142,21 @@ public class Island {
 		return true;
 	}
 
+	public bool IsPlantable(int row, int column) {
+		for (var index = 0; index < grasses.Count; ++index) {
+			var grass = grasses[index];
+			if (grass.row == row && grass.column == column)
+				return false;
+		}
+		return true;
+	}
+
 	public bool IsWalkableAndAvailable(int row, int column) {
 		return IsWalkable(row, column) && IsAvailable(row, column);
+	}
+
+	public bool IsWalkableAndPlantable(int row, int column) {
+		return IsWalkable(row, column) && IsPlantable(row, column);
 	}
 
 	public static CellType[] GenerateGround(string seed, int islandSize, int seedBase, float noiseSize, float falloffExponent, float threshold) {

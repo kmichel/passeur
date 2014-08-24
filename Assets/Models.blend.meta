@@ -6,15 +6,25 @@ ModelImporter:
     100000: Ground
     100002: //RootNode
     100004: Ship
+    100006: Grass
+    100008: Animal
     400000: Ground
     400002: //RootNode
     400004: Ship
+    400006: Grass
+    400008: Animal
     2300000: Ground
     2300002: Ship
+    2300004: Grass
+    2300006: Animal
     3300000: Ground
     3300002: Ship
+    3300004: Grass
+    3300006: Animal
     4300000: Ship
     4300002: Ground
+    4300004: Grass
+    4300006: Animal
     7400000: Default Take
     9500000: //RootNode
   materials:

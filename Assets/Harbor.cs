@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class Harbor {
+﻿public class Harbor {
 
 	public int row;
 	public int column;

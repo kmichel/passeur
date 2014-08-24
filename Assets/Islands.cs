@@ -8,8 +8,13 @@ public class Islands : MonoBehaviour {
 	public int initialHumanCount;
 	public int minInitialSheepCount;
 	public int maxInitialSheepCount;
+	public int initialGrassPatches;
 	[Range(0, 1)]
 	public float movementProbability;
+	[Range(0, 1)]
+	public float eatGrassProbability;
+	[Range(0, 1)]
+	public float grassGrowProbability;
 
 	public int seedBase;
 	public float noiseSize;
@@ -34,11 +39,13 @@ public class Islands : MonoBehaviour {
 	public GameObject sheepPrototype;
 	public GameObject humanPrototype;
 	public GameObject harborPrototype;
+	public GameObject grassPrototype;
 	public GameObject ship;
 
 	public GameObject sheepPool;
 	public GameObject humanPool;
 	public GameObject harborPool;
+	public GameObject grassPool;
 	public GameObject shipPool;
 
 	public string frontSeed;
@@ -52,7 +59,16 @@ public class Islands : MonoBehaviour {
 	[System.NonSerialized]
 	private bool lockRotator;
 
+	[System.NonSerialized]
 	private Island frontIsland;
+	[System.NonSerialized]
+	private Island leftIsland;
+	[System.NonSerialized]
+	private Island rightIsland;
+	[System.NonSerialized]
+	private Island topIsland;
+	[System.NonSerialized]
+	private Island bottomIsland;
 
 	public Islands() {
 		frontSeed = "";
@@ -68,11 +84,16 @@ public class Islands : MonoBehaviour {
 		lockRotator = false;
 
 		frontIsland = GetIsland(frontSeed);
+		leftIsland = GetIsland(GetNeighborSeed(frontSeed, "l", "r"));
+		rightIsland = GetIsland(GetNeighborSeed(frontSeed, "r", "l"));
+		topIsland = GetIsland(GetNeighborSeed(frontSeed, "t", "b"));
+		bottomIsland = GetIsland(GetNeighborSeed(frontSeed, "b", "t"));
+
 		ShowIslandOnGrid(frontIsland, frontLayout, frontGround);
-		ShowIslandOnGrid(GetIsland(GetNeighborSeed(frontSeed, "l", "r")), leftLayout, leftGround);
-		ShowIslandOnGrid(GetIsland(GetNeighborSeed(frontSeed, "r", "l")), rightLayout, rightGround);
-		ShowIslandOnGrid(GetIsland(GetNeighborSeed(frontSeed, "t", "b")), topLayout, topGround);
-		ShowIslandOnGrid(GetIsland(GetNeighborSeed(frontSeed, "b", "t")), bottomLayout, bottomGround);
+		ShowIslandOnGrid(leftIsland, leftLayout, leftGround);
+		ShowIslandOnGrid(rightIsland, rightLayout, rightGround);
+		ShowIslandOnGrid(topIsland, topLayout, topGround);
+		ShowIslandOnGrid(bottomIsland, bottomLayout, bottomGround);
 
 		frontLayout.AddItem(shipRow, shipColumn, DirectionToAngle(shipDirection), ship, shipPool);
 		UpdateRotationHint();
@@ -136,7 +157,23 @@ public class Islands : MonoBehaviour {
 			UpdateRotationHint();
 
 		foreach (var island in islands.Values)
-			island.Update(movementProbability);
+			island.Update(movementProbability, eatGrassProbability, grassGrowProbability);
+
+		frontLayout.RemoveItemsFromPool(grassPool);
+		foreach (var grass in frontIsland.grasses)
+			AddGrassView(grass, frontLayout);
+		leftLayout.RemoveItemsFromPool(grassPool);
+		foreach (var grass in leftIsland.grasses)
+			AddGrassView(grass, leftLayout);
+		rightLayout.RemoveItemsFromPool(grassPool);
+		foreach (var grass in rightIsland.grasses)
+			AddGrassView(grass, rightLayout);
+		topLayout.RemoveItemsFromPool(grassPool);
+		foreach (var grass in topIsland.grasses)
+			AddGrassView(grass, topLayout);
+		bottomLayout.RemoveItemsFromPool(grassPool);
+		foreach (var grass in bottomIsland.grasses)
+			AddGrassView(grass, bottomLayout);
 	}
 
 	public void UpdateRotationHint() {
@@ -178,13 +215,31 @@ public class Islands : MonoBehaviour {
 		}
 		foreach (var harbor in island.harbors) {
 			GameObject instance;
-			if (harborPool.transform.childCount > 0) {
+			if (harborPool.transform.childCount > 0)
 				instance = harborPool.transform.GetChild(0).gameObject;
-			} else {
+			else
 				instance = Object.Instantiate(harborPrototype) as GameObject;
-			}
 			gridLayout.AddItem(harbor.row, harbor.column, 0, instance, harborPool);
 		}
+		foreach (var grass in island.grasses)
+			AddGrassView(grass, gridLayout);
+	}
+
+	public void AddGrassView(Grass grass, GridLayout gridLayout) {
+		GameObject instance;
+		if (grassPool.transform.childCount > 0)
+			instance = grassPool.transform.GetChild(0).gameObject;
+		else
+			instance = Object.Instantiate(grassPrototype) as GameObject;
+
+		Random.seed = (grass.row * 7457) ^ (grass.column * 89);
+		var grassTransform = instance.transform.GetChild(0).transform;
+		grassTransform.localRotation =
+			Quaternion.Euler(0f, 180f, Random.Range(0f, 360f) + grass.row * 97);
+		var grassSize = Mathf.Clamp(grass.age * 0.2f, 0, 1);
+		grassTransform.localScale = new Vector3(grassSize, grassSize, grassSize);
+
+		gridLayout.AddItem(grass.row, grass.column, 0, instance, grassPool);
 	}
 
 	public Island GetIsland(string seed, bool isInitialIsland=false) {
@@ -201,6 +256,7 @@ public class Islands : MonoBehaviour {
 				shipDirection = Direction.Bottom;
 				island.CreateAnimals(AnimalType.Human, initialHumanCount);
 			}
+			island.CreateGrassPatches(initialGrassPatches);
 			island.CreateAnimals(AnimalType.Sheep, island.RandInt(minInitialSheepCount, maxInitialSheepCount));
 			islands[seed] = island;
 		}

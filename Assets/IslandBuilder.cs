@@ -90,6 +90,7 @@ public class IslandBuilder {
 		mesh.triangles = triangles.ToArray();
 		mesh.RecalculateNormals();
 		mesh.name = "Island " + island.seed;
+		mesh.Optimize();
 		return mesh;
 	}
 }
