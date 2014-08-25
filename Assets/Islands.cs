@@ -70,6 +70,12 @@ public class Islands : MonoBehaviour {
 	[System.NonSerialized]
 	private Island bottomIsland;
 
+	public float keyRepeatDelay;
+	[System.NonSerialized]
+	private Direction lastKeyPressed;
+	[System.NonSerialized]
+	private float lastKeyPressTime;
+
 	public Islands() {
 		frontSeed = "";
 		islands = new Dictionary<string, Island>();
@@ -102,26 +108,47 @@ public class Islands : MonoBehaviour {
 
 	void Update () {
 		if (!lockRotator) {
-			// TODO: cell accessor and bounds checking
 			if (Input.GetKeyDown("left")) {
-				shipDirection = Direction.Left;
-				if (frontIsland.IsNavigable(shipRow, shipColumn - 1))
-					shipColumn -= 1;
+				lastKeyPressed = Direction.Left;
+				lastKeyPressTime = 0;
 			}
 			if (Input.GetKeyDown("right")) {
-				shipDirection = Direction.Right;
-				if (frontIsland.IsNavigable(shipRow, shipColumn + 1))
-					shipColumn += 1;
+				lastKeyPressed = Direction.Right;
+				lastKeyPressTime = 0;
 			}
 			if (Input.GetKeyDown("up")) {
-				shipDirection = Direction.Top;
-				if (frontIsland.IsNavigable(shipRow + 1, shipColumn))
-					shipRow += 1;
+				lastKeyPressed = Direction.Top;
+				lastKeyPressTime = 0;
 			}
 			if (Input.GetKeyDown("down")) {
-				shipDirection = Direction.Bottom;
-				if (frontIsland.IsNavigable(shipRow - 1, shipColumn))
-					shipRow -= 1;
+				lastKeyPressed = Direction.Bottom;
+				lastKeyPressTime = 0;
+			}
+			if (Time.time - lastKeyPressTime > keyRepeatDelay) {
+				if (Input.GetKey("left") && lastKeyPressed == Direction.Left) {
+					shipDirection = Direction.Left;
+					if (frontIsland.IsNavigable(shipRow, shipColumn - 1))
+						shipColumn -= 1;
+					lastKeyPressTime = Time.time;
+				}
+				if (Input.GetKey("right") && lastKeyPressed == Direction.Right) {
+					shipDirection = Direction.Right;
+					if (frontIsland.IsNavigable(shipRow, shipColumn + 1))
+						shipColumn += 1;
+					lastKeyPressTime = Time.time;
+				}
+				if (Input.GetKey("up") && lastKeyPressed == Direction.Top) {
+					shipDirection = Direction.Top;
+					if (frontIsland.IsNavigable(shipRow + 1, shipColumn))
+						shipRow += 1;
+					lastKeyPressTime = Time.time;
+				}
+				if (Input.GetKey("down") && lastKeyPressed == Direction.Bottom) {
+					shipDirection = Direction.Bottom;
+					if (frontIsland.IsNavigable(shipRow - 1, shipColumn))
+						shipRow -= 1;
+					lastKeyPressTime = Time.time;
+				}
 			}
 		}
 

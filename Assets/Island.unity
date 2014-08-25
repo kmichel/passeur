@@ -2387,6 +2387,7 @@ MonoBehaviour:
   shipRow: 2
   shipColumn: 21
   shipDirection: 0
+  keyRepeatDelay: .100000001
 --- !u!4 &1223982662
 Transform:
   m_ObjectHideFlags: 0
