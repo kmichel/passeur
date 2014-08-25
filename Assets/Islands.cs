@@ -231,14 +231,12 @@ public class Islands : MonoBehaviour {
 			instance = grassPool.transform.GetChild(0).gameObject;
 		else
 			instance = Object.Instantiate(grassPrototype) as GameObject;
-
 		Random.seed = (grass.row * 7457) ^ (grass.column * 89);
 		var grassTransform = instance.transform.GetChild(0).transform;
 		grassTransform.localRotation =
 			Quaternion.Euler(0f, 180f, Random.Range(0f, 360f) + grass.row * 97);
 		var grassSize = Mathf.Clamp(grass.age * 0.2f, 0, 1);
 		grassTransform.localScale = new Vector3(grassSize, grassSize, grassSize);
-
 		gridLayout.AddItem(grass.row, grass.column, 0, instance, grassPool);
 	}
 

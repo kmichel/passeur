@@ -29,12 +29,12 @@ public class GridLayout : MonoBehaviour {
 	public void SetRotation(GameObject gameObject, float rotation) {
 		gameObject.transform.localRotation = Quaternion.AngleAxis(rotation, Vector3.forward);
 	}
-	
+
 	public void SetScale(GameObject gameObject, int gridSize) {
 		var spacing = 1.0f / gridSize;
 		gameObject.transform.localScale = new Vector3(spacing, spacing, spacing);
 	}
-	
+
 	public void SetPosition(GameObject gameObject, int row, int column, int gridSize) {
 		var spacing = 1.0f / gridSize;
 		var offset = (spacing - 1.0f) * 0.5f;
